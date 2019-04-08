@@ -1,0 +1,6 @@
+<h1>RESULTS PAGE</h1>
+
+<% data['Search'].forEach( movie => { %>
+  <li><%= movie['Title'] %> - <strong><%= movie['Year'] %></strong></li>
+<%}) %>
+<a href="/"><button type="button" name="button">Search again</button></a>

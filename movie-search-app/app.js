@@ -9,13 +9,20 @@ var express = require('express');
 var request = require('request');
 var app = express();
 var port = 8088;
+app.set('view engine', 'ejs');
+
+
+app.get('/', (req, res) => {
+    res.render('search');
+})
 
 
 app.get('/results', (req, res) => {
-  request('http://omdbapi.com/?s=texas&apikey=thewdb', (error, response, body) => {
+  var query = req.query.search;
+  request(`http://omdbapi.com/?s=${query}&apikey=thewdb`, (error, response, body) => {
     if (!error && response.statusCode == 200) {
-      var results = JSON.parse(body);
-      res.send(results['Search'][0]['Title']);
+      var data = JSON.parse(body);
+      res.render('results', {data: data});
     }
   });
 });
