@@ -13,12 +13,18 @@ app.use(bodyParser.urlencoded({extended: true}))
 //
 var campgroundSchema = new mongoose.Schema({
   name: String,
-  image: String
+  image: String,
+  description: String
 });
 
 var Campground = mongoose.model('Campground', campgroundSchema);
 //
-// Campground.create({name: 'Appledew River', image: 'https://images.unsplash.com/photo-1525811902-f2342640856e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=751&q=80'}, (err, campground) => {
+// Campground.create(
+//   {
+//     name: 'Appledew River',
+//     image: 'https://images.unsplash.com/photo-1525811902-f2342640856e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=751&q=80',
+//     description: 'A beautiful riverside site surrounded by apple orchards.'
+//   }, (err, campground) => {
 //   if(err) {
 //     console.log(err);
 //   } else {
@@ -32,40 +38,57 @@ app.get('/', (req, res) => {
 });
 
 
+// INDEX - show all campgrounds
 app.get('/campgrounds', (req, res) => {
   // get all campgrounds from db
   Campground.find({}, (err, allCampgrounds) => {
     if(err) {
       console.log(err);
     } else {
-      res.render('campgrounds', {campgrounds:allCampgrounds});
+      res.render('index', {campgrounds:allCampgrounds});
     }
   })
-  // res.render('campgrounds', {campgrounds: campgrounds});
 });
 
-
+// CREATE = add new campground to DB
 app.post('/campgrounds', (req, res) => {
   // get data from form
   var name = req.body.name;
   var image = req.body.image;
-  var newCampground = { name: name, image: image};
+  var desc = req.body.description;
+  var newCampground = { name: name, image: image, description: desc };
   // add to campgrounds array create a new campground and save to db
   Campground.create(newCampground, (err, newlyCreated) => {
     if(err) {
       console.log(err);
     } else {
-      res.redirect('/campgrounds' );
+      res.redirect('/campgrounds');
     }
   });
 });
 
 
+// NEW = show form to create new campground
 app.get('/campgrounds/new', (req, res) => {
   res.render('new');
 });
 
 
-app.listen(5656, () => {
+// SHOW = show individual campground
+app.get('/campgrounds/:id', (req, res) => {
+  // find campground with provided id
+  Campground.findById(req.params.id, (err, foundCampground) => {
+    if(err) {
+      console.log(err);
+    } else {
+      res.render('show', {campground: foundCampground});
+    }
+  });
+  // render show template with that campground
+
+});
+
+
+app.listen(9898, () => {
   console.log('YelpCamp server has started!');
 })
