@@ -12,6 +12,10 @@
         <!-- the percent dash here lets the input be RUN AS HTML! cool stuff... -->
         <p><%- blog.body %></p>
       </div>
+      <a class="ui orange basic button" href="/blogs/<%= blog._id %>/edit">Edit</a>
+      <form id="delete" action="/blogs/<%= blog._id %>?_method=DELETE" method="post">
+        <button class="ui basic red button">Delete</button>
+      </form>
     </div>
   </div>
 

@@ -1,4 +1,5 @@
 var express = require('express'),
+    methodOverride = require('method-override'),
     app = express(),
     port = 5665,
     bodyParser = require('body-parser'),
@@ -10,6 +11,7 @@ mongoose.connect('mongodb://localhost/blog-app', {useNewUrlParser: true});
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true}));
+app.use(methodOverride('_method'));
 
 
 // MONGOOSE MODEL CONFIG
@@ -50,7 +52,7 @@ app.get('/blogs', (req, res) => {
 // NEW ROUTE
 app.get('/blogs/new', (req, res) => {
   res.render('new');
-})
+});
 
 // CREATE ROUTE
 app.post('/blogs', (req, res) => {
@@ -76,6 +78,40 @@ app.get('/blogs/:id', (req, res) => {
   });
 });
 
+// EDIT ROUTE
+app.get('/blogs/:id/edit', (req, res) => {
+  Blog.findById(req.params.id, (err, foundBlog) => {
+    if (err) {
+      res.redirect('/blogs');
+    } else {
+      res.render('edit', {blog: foundBlog});
+    }
+  });
+});
+
+// UPDATE ROUTE
+app.put('/blogs/:id', (req, res) => {
+  Blog.findByIdAndUpdate(req.params.id, req.body.blog, (err, updatedBlog) => {
+    if (err) {
+      res.redirect('/blogs');
+    } else {
+      res.redirect('/blogs/' + req.params.id);
+    }
+  });
+});
+
+// DELETE ROUTE
+app.delete('/blogs/:id', (req, res) => {
+  Blog.findByIdAndRemove(req.params.id, (err) => {
+    if(err) {
+      res.redirect('/blogs');
+    } else {
+      res.redirect('/blogs');
+    }
+  })
+});
+
+// setup app to listen on a certain port
 app.listen(port, () => {
   console.log('Server is running on port ' + port);
 });
