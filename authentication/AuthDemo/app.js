@@ -1,5 +1,4 @@
 var express               = require('express'),
-    app                   = express(),
     mongoose              = require('mongoose'),
     passport              = require('passport'),
     bodyParser            = require('body-parser'),
@@ -11,6 +10,7 @@ mongoose.connect('mongodb://localhost/auth_demo_app',{ useNewUrlParser: true });
 
 
 // APP CONFIG
+app = express(),
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(require('express-session')({
@@ -18,14 +18,13 @@ app.use(require('express-session')({
   resave: false,
   saveUninitialized: false
 }));
-// sets passport up to work in our app
+// set passport up to work in our app
 app.use(passport.initialize());
 app.use(passport.session());
-
-
+passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
-passport.use(new LocalStrategy(User.authenticate()));
+
 
 // ===================================================================
 // ROUTES
@@ -36,7 +35,9 @@ app.get('/', (req, res) => {
 });
 
 // secret route
-app.get('/secret', (req, res) => {
+// this route is protected behind the isLoggedIn middleware function at the bottom of this file!
+// you have to be logged in to see it!
+app.get('/secret', isLoggedIn, (req, res) => {
   res.render('secret');
 });
 
@@ -80,6 +81,12 @@ app.post('/login', passport.authenticate('local', {
 });
 
 
+// logout routes
+// render login form
+app.get('/logout', (req, res) => {
+  req.logout();
+  res.redirect('/');
+});
 
 
 
@@ -97,6 +104,12 @@ app.post('/login', passport.authenticate('local', {
 
 
 
+function isLoggedIn(req, res, next) {
+  if(req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/login');
+}
 
 
 

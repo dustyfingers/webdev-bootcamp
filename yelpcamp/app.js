@@ -1,29 +1,20 @@
 var express = require('express'),
-    mongoose = require('mongoose'),
-    bodyParser = require('body-parser'),
     app = express(),
+    mongoose = require('mongoose'),
+    passport = require('passport'),
+    passportStrategy = require('passport-local'),
+    passportLocalMongoose = require('passport-local-mongoose'),
+    bodyParser = require('body-parser'),
     Campground = require('./models/campground'),
+    Comment = require('./models/comment'),
     seedDB = require('./seeds');
 
-seedDB();
+
 mongoose.connect('mongodb://localhost/yelp_camp')
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}))
+seedDB();
 
-
-// Campground.create(
-//   {
-//     name: 'Appledew River',
-//     image: 'https://images.unsplash.com/photo-1525811902-f2342640856e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=751&q=80',
-//     description: 'A beautiful riverside site surrounded by apple orchards.'
-//   }, (err, campground) => {
-//   if(err) {
-//     console.log(err);
-//   } else {
-//     console.log('NEWLY CREATED CAMPGROUND: ');
-//     console.log(campground);
-//   }
-// });
 
 app.get('/', (req, res) => {
   res.render('landing');
@@ -37,10 +28,11 @@ app.get('/campgrounds', (req, res) => {
     if(err) {
       console.log(err);
     } else {
-      res.render('index', {campgrounds:allCampgrounds});
+      res.render('campgrounds/index', {campgrounds:allCampgrounds});
     }
   })
 });
+
 
 // CREATE = add new campground to DB
 app.post('/campgrounds', (req, res) => {
@@ -62,21 +54,62 @@ app.post('/campgrounds', (req, res) => {
 
 // NEW = show form to create new campground
 app.get('/campgrounds/new', (req, res) => {
-  res.render('new');
+  res.render('campgrounds/new');
 });
 
 
 // SHOW = show individual campground
 app.get('/campgrounds/:id', (req, res) => {
   // find campground with provided id
-  Campground.findById(req.params.id, (err, foundCampground) => {
+  Campground.findById(req.params.id).populate('comments').exec((err, foundCampground) => {
     if(err) {
       console.log(err);
     } else {
-      res.render('show', {campground: foundCampground});
+      console.log(foundCampground);
+      res.render('campgrounds/show', {campground: foundCampground});
     }
   });
-  // render show template with that campground
+});
+
+// ===========================================================
+// ROUTES
+// ===========================================================
+
+// new comment route
+app.get('/campgrounds/:id/comments/new', (req, res) => {
+  Campground.findById(req.params.id, (err, campground) => {
+    if(err) {
+      console.log(err);
+    } else {
+      res.render('comments/new', {campground: campground});
+    }
+  });
+});
+
+
+app.post('/campgrounds/:id/comments', (req, res) => {
+  // loop up campground w id
+  Campground.findById(req.params.id, (err, campground) => {
+    if (err) {
+      console.log(err);
+      res.redirect('/campgrounds');
+    } else {
+      // create new comment
+      Comment.create(req.body.comment, (err, comment) => {
+        if (err) {
+            console.log(err);
+        } else {
+          // connect the new comment to campground
+          campground.comments.push(comment);
+          campground.save();
+          res.redirect('/campgrounds/' + campground._id);
+        }
+      });
+
+      // redirect to campground show page
+
+    }
+  });
 
 });
 
