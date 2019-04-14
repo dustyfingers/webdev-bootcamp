@@ -2,19 +2,32 @@ var express = require('express'),
     app = express(),
     mongoose = require('mongoose'),
     passport = require('passport'),
-    passportStrategy = require('passport-local'),
+    LocalStrategy = require('passport-local'),
     passportLocalMongoose = require('passport-local-mongoose'),
     bodyParser = require('body-parser'),
     Campground = require('./models/campground'),
     Comment = require('./models/comment'),
+    User = require('./models/user'),
     seedDB = require('./seeds');
 
 
-mongoose.connect('mongodb://localhost/yelp_camp')
+mongoose.connect('mongodb://localhost/yelp_camp', { useNewUrlParser: true });
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}))
+app.use(express.static(__dirname + '/public'));
 seedDB();
 
+// passport config
+app.use(require('express-session')({
+  secret: 'fflk apple sigma fat notate fiskd',
+  resave: false,
+  saveUninitialized: false
+}))
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 app.get('/', (req, res) => {
   res.render('landing');
@@ -105,13 +118,40 @@ app.post('/campgrounds/:id/comments', (req, res) => {
           res.redirect('/campgrounds/' + campground._id);
         }
       });
-
-      // redirect to campground show page
-
     }
   });
-
 });
+
+
+// show register form
+app.get('/register', (req, res) => {
+  res.render('register');
+});
+
+
+// handle user sign up and initial log in
+app.post('/register', (req, res) => {
+  var newUser = new User({username: req.body.username});
+  User.register(newUser, req.body.password, (err, user) => {
+    if (err) {
+      console.log(err);
+      return res.render('register');
+    }
+    passport.authenticate('local')(req, res, () => {
+      res.redirect('/campgrounds');
+    });
+  });
+});
+
+
+// show login form
+app.get('/login', (req, res) => {
+  res.render('login');
+});
+
+// callback isnt need here, it was just to show that the passport method is middleware
+// app.post('/login', passport.authenticate('local', {successRedirect: '/campgrounds', failureRedirect: '/login'}), (req, res) => {});
+app.post('/login', passport.authenticate('local', {successRedirect: '/campgrounds', failureRedirect: '/login'}));
 
 
 app.listen(9898, () => {
