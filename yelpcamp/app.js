@@ -1,5 +1,6 @@
 var express = require('express'),
     app = express(),
+    port = 9898,
     mongoose = require('mongoose'),
     passport = require('passport'),
     LocalStrategy = require('passport-local'),
@@ -19,9 +20,10 @@ var commentRoutes = require('./routes/comments'),
 
 mongoose.connect('mongodb://localhost/yelp_camp', { useNewUrlParser: true });
 app.set('view engine', 'ejs');
-app.use(bodyParser.urlencoded({extcommentsended: true}))
+app.use(bodyParser.urlencoded({extended: true}))
 app.use(express.static(__dirname + '/public'));
-seedDB();
+// // seed database with dummy data
+// seedDB();
 
 
 // passport config
@@ -46,6 +48,6 @@ app.use('/campgrounds/:id/comments', commentRoutes);
 app.use('/campgrounds', campgroundRoutes);
 
 
-app.listen(9898, () => {
-  console.log('YelpCamp server has started!');
+app.listen(port, () => {
+  console.log(`YelpCamp server has started on port ${port}!`);
 })
