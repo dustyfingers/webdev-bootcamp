@@ -53,27 +53,22 @@ router.get('/:id', (req, res) => {
       console.log(err);
     } else {
       console.log(foundCampground);
-      res.render('campgrounds/show', {campground: foundCampground});
+      res.render('campgrounds/show', { campground: foundCampground });
     }
   });
 });
 
 
 // edit campground route
-router.get('/:id/edit', (req, res) => {
+router.get('/:id/edit', checkCampgroundOwnership, (req, res) => {
   Campground.findById(req.params.id, (err, foundCampground) => {
-    if (err) {
-      console.log(err);
-      res.redirect('/campgrounds');
-    } else {
-      res.render('campgrounds/edit', { campground: foundCampground});
-    }
+    res.render('campgrounds/edit', { campground: foundCampground });
   });
 });
 
 
 // update campground route
-router.put('/:id', (req, res) => {
+router.put('/:id', checkCampgroundOwnership, (req, res) => {
   // find and update the correct campground
   Campground.findByIdAndUpdate(req.params.id, req.body.campground, (err, updatedCampground) => {
     if (err) {
@@ -86,7 +81,7 @@ router.put('/:id', (req, res) => {
 
 
 // destroy campground route
-router.delete('/:id', (req, res) => {
+router.delete('/:id', checkCampgroundOwnership, (req, res) => {
   Campground.findByIdAndRemove( req.params.id, (err) => {
     if (err) {
       res.redirect('/campgrounds');
@@ -103,6 +98,29 @@ function isLoggedIn(req, res, next) {
     return next();
   }
   res.redirect('/login');
+}
+
+
+// checkCampgroundOwnership middleware
+function checkCampgroundOwnership(req, res, next) {
+  if (req.isAuthenticated()) {
+    Campground.findById(req.params.id, (err, foundCampground) => {
+      if (err) {
+        res.redirect('back');
+      } else {
+        // does user own campground?
+        console.log(foundCampground);
+        console.log(foundCampground.author.id);
+        if (foundCampground.author.id.equals(req.user._id)) {
+          next();
+        } else {
+          res.redirect('back');
+        }
+      }
+    });
+  } else {
+    res.redirect('back');
+  }
 }
 
 
