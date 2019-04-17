@@ -109,8 +109,6 @@ function checkCampgroundOwnership(req, res, next) {
         res.redirect('back');
       } else {
         // does user own campground?
-        console.log(foundCampground);
-        console.log(foundCampground.author.id);
         if (foundCampground.author.id.equals(req.user._id)) {
           next();
         } else {
