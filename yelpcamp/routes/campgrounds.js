@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
   // get all campgrounds from db
   Campground.find({}, (err, allCampgrounds) => {
     if(err) {
-      console.log(err);
+      req.flash('error', 'Something went wrong.');
     } else {
       res.render('campgrounds/index', {campgrounds:allCampgrounds});
     }
@@ -87,6 +87,7 @@ router.delete('/:id', middleware.checkCampgroundOwnership, (req, res) => {
     if (err) {
       res.redirect('/campgrounds');
     } else {
+      req.flash('success', 'Campground successfully deleted.');
       res.redirect('/campgrounds');
     }
   });
