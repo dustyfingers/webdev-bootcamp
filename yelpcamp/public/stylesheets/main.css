@@ -13,3 +13,8 @@
 .thumbnail .caption-full {
   padding: 9px;
 }
+
+#map {
+  height:400px;
+  width: 100%;
+}

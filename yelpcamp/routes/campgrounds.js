@@ -3,6 +3,16 @@ var router = express.Router();
 var Campground = require('../models/campground');
 var Comment = require('../models/comment');
 var middleware = require('../middleware');
+var NodeGeocoder = require('node-geocoder');
+
+var options = {
+  provider: 'google',
+  httpAdapter: 'https',
+  apiKey: process.env.GEOCODER_API_KEY,
+  formatter: null
+};
+
+var geocoder = NodeGeocoder(options);
 
 
 // INDEX - show all campgrounds
@@ -29,14 +39,23 @@ router.post('/', middleware.isLoggedIn, (req, res) => {
     id: req.user._id,
     username: req.user.username
   }
-  var newCampground = { name: name, price: price, image: image, description: desc, author: author };
-  // add to campgrounds array create a new campground and save to db
-  Campground.create(newCampground, (err, newlyCreated) => {
-    if(err) {
-      console.log(err);
-    } else {
-      res.redirect('/campgrounds');
+  geocoder.geocode(req.body.location, (err, data) => {
+    if (err || !data.length) {
+      req.flash('error', 'Invalid Address');
+      return res.redirect('back');
     }
+    var lat = data[0].latitude;
+    var lng = data[0].longitude;
+    var location = data[0].formattedAddress;
+    var newCampground = { name: name, price: price, image: image, description: desc, author: author, location: location, lat: lat, lng: lng };
+    // add to campgrounds array create a new campground and save to db
+    Campground.create(newCampground, (err, newlyCreated) => {
+      if(err) {
+        console.log(err);
+      } else {
+        res.redirect('/campgrounds');
+      }
+    });
   });
 });
 
@@ -71,13 +90,25 @@ router.get('/:id/edit', middleware.checkCampgroundOwnership, (req, res) => {
 
 // update campground route
 router.put('/:id', middleware.checkCampgroundOwnership, (req, res) => {
-  // find and update the correct campground
-  Campground.findByIdAndUpdate(req.params.id, req.body.campground, (err, updatedCampground) => {
-    if (err) {
-      res.redirect('/campgrounds');
-    } else {
-      res.redirect('/campgrounds/' + req.params.id);
+  geocoder.geocode(req.body.campground.location, (err, data) => {
+    if (err || !data.length) {
+      req.flash('error', 'Invalid Address');
+      return res.redirect('back');
     }
+    req.body.campground.lat = data[0].latitude;
+    req.body.campground.lng = data[0].longitude;
+    req.body.campground.location = data[0].formattedAddress;
+    var newData = { name: req.body.campground.name, price: req.body.campground.price, image: req.body.campground.image, description: req.body.campground.description };
+    // find and update the correct campground
+    Campground.findByIdAndUpdate(req.params.id, req.body.campground, (err, updatedCampground) => {
+      if (err) {
+        req.flash('error', err.message);
+        res.redirect('back');
+      } else {
+        req.flash('success', 'Successfully Updated!')
+        res.redirect('/campgrounds/' + req.params.id);
+      }
+    });
   });
 });
 
