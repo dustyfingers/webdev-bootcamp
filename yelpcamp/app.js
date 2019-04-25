@@ -19,7 +19,8 @@ var express = require('express'),
 // require route files
 var commentRoutes = require('./routes/comments'),
     campgroundRoutes = require('./routes/campgrounds'),
-    indexRoutes = require('./routes/index');
+    indexRoutes = require('./routes/index'),
+    userRoutes = require('./routes/users');
 
 
 mongoose.connect('mongodb://localhost/yelp_camp', { useNewUrlParser: true });
@@ -54,6 +55,7 @@ app.use((req, res, next) => {
 app.use(indexRoutes);
 app.use('/campgrounds/:id/comments', commentRoutes);
 app.use('/campgrounds', campgroundRoutes);
+app.use('/users', userRoutes);
 
 
 app.listen(port, () => {
