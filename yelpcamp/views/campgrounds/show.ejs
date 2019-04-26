@@ -82,5 +82,5 @@
     marker.addListener('click', () => { infowindow.open(map, marker) })
   }
  </script>
- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZAfhLTBt5im684pWePSoLnWlMZVGWehI&callback=initMap"></script>
+ <script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= process.env.GEOCODER_API_KEY %>&callback=initMap"></script>
 <% include ../partials/footer %>
