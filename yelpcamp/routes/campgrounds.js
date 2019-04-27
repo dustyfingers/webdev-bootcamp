@@ -69,32 +69,32 @@ router.post('/', middleware.isLoggedIn, upload.single('image'), (req, res) => {
     }
 
     cloudinary.uploader.upload(req.file.path, (result) => {
-      var image = req.body.image;
       req.body.image = result.secure_url;
-
-    });
-    // get data from form
-    var name = req.body.name;
-    var price = req.body.price;
-    var desc = req.body.description;
-    var image = req.body.image;
-    var lat = data[0].latitude;
-    var lng = data[0].longitude;
-    var location = data[0].formattedAddress;
-    var author = {
-      id: req.user._id,
-      username: req.user.username
-    }
-    var newCampground = { name: name, price: price, image: image, description: desc, author: author, location: location, lat: lat, lng: lng };
-    // eval(require('locus'));
-    // add to campgrounds array create a new campground and save to db
-    Campground.create(newCampground, (err, newlyCreated) => {
-      if(err) {
-        console.log(err);
-      } else {
-        res.redirect('/campgrounds/' + newlyCreated._id);
+      // get data from form
+      var name = req.body.name;
+      var price = req.body.price;
+      var desc = req.body.description;
+      var image = req.body.image;
+      var lat = data[0].latitude;
+      var lng = data[0].longitude;
+      var location = data[0].formattedAddress;
+      var author = {
+        id: req.user._id,
+        username: req.user.username
       }
+      var newCampground = { name: name, price: price, image: image, description: desc, author: author, location: location, lat: lat, lng: lng };
+      // eval(require('locus'));
+      console.log(req.body.image);
+      // add to campgrounds array create a new campground and save to db
+      Campground.create(newCampground, (err, newlyCreated) => {
+        if(err) {
+          console.log(err);
+        } else {
+          res.redirect('/campgrounds/' + newlyCreated._id);
+        }
+      });
     });
+
   });
 });
 
