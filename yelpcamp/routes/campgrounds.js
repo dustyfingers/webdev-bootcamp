@@ -143,9 +143,12 @@ router.put('/:id', middleware.checkCampgroundOwnership, upload.single('image'), 
         res.redirect('back');
       } else {
         if (req.file) {
+          console.log('There is a file to upload.');
+          console.log(req.file.path);
           try {
             await cloudinary.v2.uploader.destroy(campground.imageId);
             let result = await cloudinary.v2.uploader.upload(req.file.path);
+            console.log(result);
             eval(require('locus'));
             campground.imageId = result.public_id;
             campground.image = result.secure_url;
