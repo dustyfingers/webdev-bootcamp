@@ -130,7 +130,7 @@ router.get('/:id/edit', middleware.checkCampgroundOwnership, (req, res) => {
 
 
 // edit campground post route
-router.put('/:id', middleware.checkCampgroundOwnership, upload.single('image'), async function(req, res) {
+router.put('/:id', middleware.checkCampgroundOwnership, upload.single('image'), (req, res) => {
   geocoder.geocode(req.body.campground.location, (err, data) => {
     if (err || !data.length) {
       req.flash('error', 'Invalid Address');
@@ -140,7 +140,7 @@ router.put('/:id', middleware.checkCampgroundOwnership, upload.single('image'), 
     req.body.campground.lng = data[0].longitude;
     req.body.campground.location = data[0].formattedAddress;
     // find and update the correct campground
-    Campground.findById(req.params.id, async function(err, campground) {
+    Campground.findById(req.params.id, async (err, campground) => {
       if (err) {
         req.flash('error', err.message);
         res.redirect('back');
@@ -169,12 +169,19 @@ router.put('/:id', middleware.checkCampgroundOwnership, upload.single('image'), 
 
 // destroy campground route
 router.delete('/:id', middleware.checkCampgroundOwnership, (req, res) => {
-  Campground.findByIdAndRemove(req.params.id, (err) => {
+  Campground.findById(req.params.id, async (err, campground) => {
     if (err) {
+      req.flash('error', err.message);
+      return res.redirect('back');
+    }
+    try {
+      await cloudinary.v2.uploader.destroy(campground.imageId);
+      campground.remove();
+      req.flash('Campground successfully deleted.')
       res.redirect('/campgrounds');
-    } else {
-      req.flash('success', 'Campground successfully deleted.');
-      res.redirect('/campgrounds');
+    } catch (err) {
+      req.flash('error', err.message);
+      return res.redirect('back');
     }
   });
 });
