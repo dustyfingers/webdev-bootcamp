@@ -79,11 +79,13 @@ router.post('/', middleware.isLoggedIn, upload.single('image'), (req, res) => {
       }
       req.body.image = result.secure_url;
       req.body.imageId = result.public_id;
+
       // get data from form
       var name = req.body.name;
       var price = req.body.price;
       var desc = req.body.description;
       var image = req.body.image;
+      var imageId = req.body.imageId;
       var lat = data[0].latitude;
       var lng = data[0].longitude;
       var location = data[0].formattedAddress;
@@ -91,7 +93,8 @@ router.post('/', middleware.isLoggedIn, upload.single('image'), (req, res) => {
         id: req.user._id,
         username: req.user.username
       }
-      var newCampground = { name: name, price: price, image: image, description: desc, author: author, location: location, lat: lat, lng: lng };
+
+      var newCampground = { name: name, price: price, image: image, imageId: imageId, description: desc, author: author, location: location, lat: lat, lng: lng };
       // add to campgrounds array create a new campground and save to db
       Campground.create(newCampground, (err, newlyCreated) => {
         if(err) {
@@ -143,13 +146,9 @@ router.put('/:id', middleware.checkCampgroundOwnership, upload.single('image'), 
         res.redirect('back');
       } else {
         if (req.file) {
-          console.log('There is a file to upload.');
-          console.log(req.file.path);
           try {
             await cloudinary.v2.uploader.destroy(campground.imageId);
             let result = await cloudinary.v2.uploader.upload(req.file.path);
-            console.log(result);
-            eval(require('locus'));
             campground.imageId = result.public_id;
             campground.image = result.secure_url;
           } catch (err) {
