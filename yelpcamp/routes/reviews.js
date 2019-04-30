@@ -40,8 +40,7 @@ router.post('/', middleware.isLoggedIn, middleware.checkReviewExistence, (req, r
       return res.redirect('back');
     }
     Review.create(req.body.review, (err, review) => {
-      eval(require('locus'));
-      review.author.id = req.user_id;
+      review.author.id = req.user._id;
       review.author.username = req.user.username;
       review.campground = campground;
       review.save();
@@ -102,12 +101,11 @@ router.delete('/:review_id', middleware.checkReviewOwnership, (req, res) => {
       }
       campground.rating = calculateAverage(campground.reviews);
       campground.save();
-      req.flash('success', 'Your review was successfully edited.');
+      req.flash('success', 'Your review was successfully deleted.');
       res.redirect('/campgrounds/' + req.params.id);
     });
   });
 });
-
 
 
 // func to calculate the average rating of a campground
