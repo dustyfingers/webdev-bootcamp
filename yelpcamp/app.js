@@ -20,6 +20,7 @@ var express = require('express'),
 var commentRoutes = require('./routes/comments'),
     campgroundRoutes = require('./routes/campgrounds'),
     indexRoutes = require('./routes/index'),
+    reviewRoutes = require('./routes/reviews'),
     userRoutes = require('./routes/users');
 
 
@@ -36,7 +37,7 @@ app.locals.moment = require('moment');
 
 // passport config
 app.use(require('express-session')({
-  secret: 'fflk apple sigma fat notate fiskd',
+  secret: process.env.PASSPORT_SECRET,
   resave: false,
   saveUninitialized: false
 }))
@@ -54,8 +55,9 @@ app.use((req, res, next) => {
 
 
 app.use(indexRoutes);
-app.use('/campgrounds/:id/comments', commentRoutes);
 app.use('/campgrounds', campgroundRoutes);
+app.use('/campgrounds/:id/comments', commentRoutes);
+app.use('/campgrounds/:id/reviews', reviewRoutes);
 app.use('/users', userRoutes);
 
 

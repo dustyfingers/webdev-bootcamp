@@ -1,5 +1,6 @@
 var Campground = require('../models/campground');
 var Comment = require('../models/comment');
+var Review = require('../models/review');
 
 
 // middleware goes here
@@ -58,6 +59,52 @@ middlewareObj.isLoggedIn = (req, res, next) => {
   req.flash('error', 'You need to be logged in to do that');
   res.redirect('/login');
 }
+
+middlewareObj.checkReviewOwnership = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    Review.findById(req.params.review_id, (err, foundReview) => {
+      if (err) {
+        req.flash('error', 'There was a problem...');
+        res.redirect('back');
+      } else {
+        if (foundReview.author.id.equals(req.user_id)) {
+            next();
+        } else {
+          req.flash("error", "You don't have permission to do that");
+          res.redirect("back");
+        }
+      }
+    });
+  } else {
+    req.flash("error", "You need to be logged in to do that");
+    res.redirect("back");
+  }
+}
+
+
+middlewareObj.checkReviewExistence = (req, res, next) => {
+    if (req.isAuthenticated()) {
+        Campground.findById(req.params.id).populate("reviews").exec((err, foundCampground) => {
+            if (err || !foundCampground) {
+                req.flash("error", "Campground not found.");
+                res.redirect("back");
+            } else {
+                var foundUserReview = foundCampground.reviews.some((review) => {
+                    return review.author.id.equals(req.user._id);
+                });
+                if (foundUserReview) {
+                    req.flash("error", "You already wrote a review.");
+                    return res.redirect("/campgrounds/" + foundCampground._id);
+                }
+                // if the review was not found, go to the next middleware
+                next();
+            }
+        });
+    } else {
+        req.flash("error", "You need to login first.");
+        res.redirect("back");
+    }
+};
 
 
 module.exports = middlewareObj;
