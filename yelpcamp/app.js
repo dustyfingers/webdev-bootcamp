@@ -11,17 +11,15 @@ var express = require('express'),
     passportLocalMongoose = require('passport-local-mongoose'),
     bodyParser = require('body-parser'),
     Campground = require('./models/campground'),
-    Comment = require('./models/comment'),
     User = require('./models/user'),
     seedDB = require('./seeds');
 
 
 // require route files
-var commentRoutes = require('./routes/comments'),
-    campgroundRoutes = require('./routes/campgrounds'),
-    indexRoutes = require('./routes/index'),
-    reviewRoutes = require('./routes/reviews'),
-    userRoutes = require('./routes/users');
+const campgroundRoutes = require('./routes/campgrounds'),
+      indexRoutes = require('./routes/index'),
+      reviewRoutes = require('./routes/reviews'),
+      userRoutes = require('./routes/users');
 
 
 mongoose.connect('mongodb://localhost/yelp_camp', { useNewUrlParser: true });
@@ -56,7 +54,6 @@ app.use((req, res, next) => {
 
 app.use(indexRoutes);
 app.use('/campgrounds', campgroundRoutes);
-app.use('/campgrounds/:id/comments', commentRoutes);
 app.use('/campgrounds/:id/reviews', reviewRoutes);
 app.use('/users', userRoutes);
 

@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 var Campground = require('../models/campground');
-var Comment = require('../models/comment');
 var Review = require('../models/review');
 var middleware = require('../middleware');
 var NodeGeocoder = require('node-geocoder');
@@ -113,7 +112,7 @@ router.post('/', middleware.isLoggedIn, upload.single('image'), (req, res) => {
 // show campground route
 router.get('/:id', (req, res) => {
   // find campground with provided id
-  Campground.findById(req.params.id).populate('comments').populate({
+  Campground.findById(req.params.id).populate({
     path: 'reviews',
     options: {sort: {createdAt: -1}}
   }).exec((err, foundCampground) => {
@@ -182,23 +181,16 @@ router.delete('/:id', middleware.checkCampgroundOwnership, (req, res) => {
     }
     try {
       await cloudinary.v2.uploader.destroy(campground.imageId);
-      // delete comments associated with the campground
-      Comment.remove({"_id": {$in: campground.comments}}, function (err) {
+      // deletes all reviews associated with the campground
+      Review.remove({"_id": {$in: campground.reviews}}, function (err) {
         if (err) {
-          console.log(err);
-          return res.redirect("/campgrounds");
+            console.log(err);
+            return res.redirect("/campgrounds");
         }
-        // deletes all reviews associated with the campground
-        Review.remove({"_id": {$in: campground.reviews}}, function (err) {
-          if (err) {
-              console.log(err);
-              return res.redirect("/campgrounds");
-          }
-          //  delete the campground
-          campground.remove();
-          req.flash("success", "Campground deleted successfully!");
-          res.redirect("/campgrounds");
-        });
+        //  delete the campground
+        campground.remove();
+        req.flash("success", "Campground deleted successfully!");
+        res.redirect("/campgrounds");
       });
     } catch (err) {
       req.flash('error', err.message);

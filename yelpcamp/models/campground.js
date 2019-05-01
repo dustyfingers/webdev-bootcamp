@@ -18,12 +18,6 @@ var campgroundSchema = new mongoose.Schema({
     },
     username: String
   },
-  comments: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Comment'
-    }
-  ],
   reviews: [
     {
       type: mongoose.Schema.Types.ObjectId,
