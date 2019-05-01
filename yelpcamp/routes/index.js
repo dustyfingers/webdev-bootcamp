@@ -110,6 +110,7 @@ router.post('/forgot', (req, res, next) => {
       };
       smtpTransport.sendMail(mailOptions, (err) => {
         req.flash('success', 'An email has been sent to ' + user.email + ' with further instructions.');
+        res.redirect('/login');
         done(err, 'done');
       });
     }

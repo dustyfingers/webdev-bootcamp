@@ -1,36 +1,25 @@
 <% include ./partials/header %>
 
-<div class="row">
-  <h1 style="text-align: center">Sign Up!</h1>
-  <div style="width: 30%; margin: 20px auto;">
-    <form class="" action="/register" method="post">
-      <div class="form-group">
-        <input class="form-control" type="text" name="username" placeholder="username">
-      </div>
-      <div class="form-group">
-        <input class="form-control" type="email" name="email" placeholder="email">
-      </div>
-      <div class="form-group">
-        <input class="form-control" type="text" name="avatar" placeholder="avatar">
-      </div>
-      <div class="form-group">
-        <input class="form-control" type="text" name="firstName" placeholder="first name">
-      </div>
-      <div class="form-group">
-        <input class="form-control" type="text" name="lastName" placeholder="last name">
-      </div>
-      <div class="form-group">
-        <input class="form-control" type="pasword" name="adminCode" placeholder="admin access code">
-      </div>
-      <div class="form-group">
-        <input class="form-control" type="password" name="password" placeholder="password">
-      </div>
-      <div class="form-group">
-        <button type="submit" class="btn btn-lg btn-primary btn-block">Sign Up</button>
-      </div>
-    </form>
+<div class="container d-flex justify-content-center align-items-center flex-column">
+  <form class="" action="/register" method="post">
+    <h1>Sign Up!</h1>
+    <label for="username">Username:</label>
+    <input class="form-control" type="text" name="username" placeholder="username">
+    <label for="email">Email:</label>
+    <input class="form-control" type="email" name="email" placeholder="email">
+    <label for="avatar">Avatar:</label>
+    <input class="form-control" type="text" name="avatar" placeholder="avatar">
+    <label for="firstName">First Name:</label>
+    <input class="form-control" type="text" name="firstName" placeholder="first name">
+    <label for="lastName">Last Name:</label>
+    <input class="form-control" type="text" name="lastName" placeholder="last name">
+    <label for="adminCode">Administrator Code:</label>
+    <input class="form-control" type="pasword" name="adminCode" placeholder="admin access code">
+    <label for="password">Password:</label>
+    <input class="form-control" type="password" name="password" placeholder="password">
+    <button type="submit" class="btn btn-lg btn-primary btn-block">Sign Up</button>
     <a href="/campgrounds">Go Back</a>
-  </div>
+  </form>
 </div>
 
 <% include ./partials/footer %>
