@@ -2,16 +2,14 @@
 
 <div class="container">
 
-  <header class="jumbotron bg-dark">
-    <div class="container">
+  <header class="jumbotron bg-dark text-light">
+    <div class="container d-flex flex-column align-items-center justify-content-center">
       <h1>Welcome to YelpCamp!</h1>
       <p>View our hand-picked campgrounds from all over the world</p>
-      <p>  <a class="btn btn-primary btn-lg" href="/campgrounds/new">Add New Campground</a> </p>
+      <p>  <a class="btn btn-success btn-lg" href="/campgrounds/new">Add New Campground</a> </p>
         <form class="form-inline" action="/campgrounds" method="get">
-          <div class="form-group">
             <input class="form-control" type="text" name="search" placeholder="Campground search...">
-            <input class="btn btn-default" type="submit" value="Search">
-          </div>
+            <input class=" from-control btn btn-success" type="submit" value="Search">
         </form>
     </div>
   </header>

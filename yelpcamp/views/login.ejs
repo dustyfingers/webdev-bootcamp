@@ -1,13 +1,15 @@
 <% include ./partials/header %>
 
 <div class="container d-flex justify-content-center align-items-center flex-column">
+  <div class="text-center">
+    <h1>Log In</h1>
+  </div>
   <form class="" action="/login" method="post">
-    <h1>Login</h1>
     <label for="username">Username:</label>
     <input id="usernameInput" class="form-control" type="text" name="username" placeholder="username" required autofocus>
     <label for="password">Password:</label>
     <input id="passwordInput" class="form-control" type="password" name="password" placeholder="password" required>
-    <button class="form-control btn btn-primary btn-block" type="submit" name="button">Log In</button>
+    <button class="form-control btn btn-lg btn-success btn-block" type="submit" name="button">Log In</button>
     <a href="/campgrounds">Go Back</a>
     <a class="pull-right text-muted" href="/forgot">forgot password?</a>
   </form>
