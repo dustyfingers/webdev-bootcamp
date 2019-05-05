@@ -1,31 +1,31 @@
-var express = require('express');
-var router = express.Router();
-var Campground = require('../models/campground');
-var Review = require('../models/review');
-var middleware = require('../middleware');
-var NodeGeocoder = require('node-geocoder');
-var multer = require('multer');
-var cloudinary = require('cloudinary');
-var options = {
+let express = require('express'),
+    router = express.Router(),
+    Campground = require('../models/campground'),
+    Review = require('../models/review'),
+    middleware = require('../middleware'),
+    NodeGeocoder = require('node-geocoder'),
+    multer = require('multer'),
+    cloudinary = require('cloudinary');
+let options = {
   provider: 'google',
   httpAdapter: 'https',
   apiKey: process.env.GEOCODER_API_KEY,
   formatter: null
 };
-var geocoder = NodeGeocoder(options);
-var storage = multer.diskStorage({
+let geocoder = NodeGeocoder(options);
+let storage = multer.diskStorage({
   filename: (req, file, callback) => {
     callback(null, Date.now() + file.originalname);
   }
 });
-var imageFilter = (req, file, cb) => {
+let imageFilter = (req, file, cb) => {
   // accept image files only
   if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
     return cb(new Error('Only image files are allowed!'), false);
   }
   cb(null, true);
 };
-var upload = multer({ storage: storage, fileFilter: imageFilter });
+let upload = multer({ storage: storage, fileFilter: imageFilter });
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -82,20 +82,20 @@ router.post('/', middleware.isLoggedIn, upload.single('image'), (req, res) => {
       req.body.imageId = result.public_id;
 
       // get data from form
-      var name = req.body.name;
-      var price = req.body.price;
-      var desc = req.body.description;
-      var image = req.body.image;
-      var imageId = req.body.imageId;
-      var lat = data[0].latitude;
-      var lng = data[0].longitude;
-      var location = data[0].formattedAddress;
-      var author = {
+      let name = req.body.name;
+      let price = req.body.price;
+      let desc = req.body.description;
+      let image = req.body.image;
+      let imageId = req.body.imageId;
+      let lat = data[0].latitude;
+      let lng = data[0].longitude;
+      let location = data[0].formattedAddress;
+      let author = {
         id: req.user._id,
         username: req.user.username
       }
 
-      var newCampground = { name: name, price: price, image: image, imageId: imageId, description: desc, author: author, location: location, lat: lat, lng: lng };
+      let newCampground = { name: name, price: price, image: image, imageId: imageId, description: desc, author: author, location: location, lat: lat, lng: lng };
       // add to campgrounds array create a new campground and save to db
       Campground.create(newCampground, (err, newlyCreated) => {
         if(err) {

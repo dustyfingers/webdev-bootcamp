@@ -1,6 +1,6 @@
-var dotenv = require('dotenv').config();
+let dotenv = require('dotenv').config();
 
-var express = require('express'),
+let express = require('express'),
     app = express(),
     port = 9898,
     mongoose = require('mongoose'),

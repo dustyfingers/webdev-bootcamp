@@ -1,9 +1,9 @@
-var express = require('express');
-var router = express.Router();
-var User = require('../models/user');
-var Campground = require('../models/campground');
-var middleware = require('../middleware');
-var passport = require('passport');
+let express = require('express'),
+    router = express.Router(),
+    User = require('../models/user'),
+    Campground = require('../models/campground'),
+    middleware = require('../middleware'),
+    passport = require('passport');
 
 
 // show user profile route

@@ -1,11 +1,11 @@
-var express = require('express');
-var router = express.Router();
-var passport = require('passport');
-var User = require('../models/user');
-var async = require('async');
-var nodemailer = require('nodemailer');
-var crypto = require('crypto');
-var middleware = require('../middleware');
+let express = require('express'),
+    router = express.Router(),
+    passport = require('passport'),
+    User = require('../models/user'),
+    async = require('async'),
+    nodemailer = require('nodemailer'),
+    crypto = require('crypto'),
+    middleware = require('../middleware');
 
 
 // root route
@@ -22,7 +22,7 @@ router.get('/register', (req, res) => {
 
 // handle user sign up and initial log in
 router.post('/register', (req, res) => {
-  var newUser = new User(
+  let newUser = new User(
     {
       username: req.body.username,
       firstName: req.body.firstName,
@@ -75,7 +75,7 @@ router.post('/forgot', (req, res, next) => {
   async.waterfall([
     (done) => {
       crypto.randomBytes(20, (err, buf) => {
-        var token = buf.toString('hex');
+        let token = buf.toString('hex');
         done(err, token);
       });
     },
@@ -92,14 +92,14 @@ router.post('/forgot', (req, res, next) => {
       });
     },
     (token, user, done) => {
-      var smtpTransport = nodemailer.createTransport({
+      let smtpTransport = nodemailer.createTransport({
         service: 'Gmail',
         auth: {
           user: 'bobtheassailant@gmail.com',
           pass: process.env.GMAILPW
         }
       });
-      var mailOptions = {
+      let mailOptions = {
         to: user.email,
         from: 'bobtheassailant@gmail.com',
         subject: 'YelpCamp password reset',
@@ -160,14 +160,14 @@ router.post('/reset/:token', (req, res) => {
       });
     },
     (user, done) => {
-      var smtpTransport = nodemailer.createTransport({
+      let smtpTransport = nodemailer.createTransport({
         service: 'Gmail',
         auth: {
           user: 'bobtheassailant@gmail.com',
           pass: process.env.GMAILPW
         }
       });
-      var mailOptions = {
+      let mailOptions = {
         to: user.email,
         from: 'bobtheassailant@mail.com',
         subject: 'Your password has been changed',
