@@ -30,7 +30,7 @@
             <span class="fa fa-star <% if (campground.rating > 4.5) { %> checked <% } %>"></span>
             <% } %>
             <p>
-              <a class="btn btn-primary" href="/campgrounds/<%= campground._id %>">More Info</a>
+              <a class="btn btn-success mt-4" href="/campgrounds/<%= campground._id %>">See <%= campground.name %></a>
             </p>
           </div>
         </div>

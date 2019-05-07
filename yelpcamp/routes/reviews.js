@@ -27,7 +27,7 @@ router.get('/new', middleware.isLoggedIn, middleware.checkReviewExistence, (req,
       req.flash('error', err.message);
       return res.redirect('back');
     }
-    res.render('reviews/new', {campground: campground});
+    res.render('reviews/new', { campground: campground });
   });
 });
 
